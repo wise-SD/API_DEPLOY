@@ -5,6 +5,10 @@ const app = fastify({
   logger: true,
 })
 
+app.get('/', (request, reply) => {
+  reply.status(200).send('Worked')
+})
+
 app.register(registerCities, {
   prefix: 'cidades',
 })
