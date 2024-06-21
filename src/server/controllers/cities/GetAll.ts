@@ -12,7 +12,7 @@ interface IQueryProps {
 const getAllSchema: z.ZodType<IQueryProps> = z.object({
   page: z.number().positive().optional(),
   limit: z.number().positive().optional(),
-  filter: z.string().optional(),
+  filter: z.string().optional().optional(),
 })
 
 export const getAllValidation = validation({

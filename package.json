@@ -16,7 +16,11 @@
     "dev": "ts-node-dev src/index.ts",
     "test": "jest",
     "postinstall": "tsc",
-    "production": "node ./build/index.js"
+    "production": "node ./build/index.js",
+    "knex:migrate": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:latest",
+    "knex:rollback": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback",
+    "knex:rollback-all": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback --all",
+    "knex:seed": "kenx --knexfile ./src/server/database/knex/Environment.ts seed:run"
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",

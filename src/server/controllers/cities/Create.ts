@@ -1,14 +1,14 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { validation } from '../../shared/middlewares'
-import { z } from 'zod'
 import { customErrorsMap } from '../../shared/services/ZodErrorsMap'
+import { validation } from '../../shared/middlewares'
+import { ICitie } from '../../database/models'
+import { CitiesProvider } from '../../database/providers'
+import { z } from 'zod'
 
-interface ICities {
-  nome: string
-}
+interface IBodyProps extends Omit<ICitie, 'id'> {}
 
-const bodySchema: z.ZodType<ICities> = z.object({
-  nome: z.string().min(3),
+const bodySchema: z.ZodType<IBodyProps> = z.object({
+  nome: z.string().min(3).max(100),
 })
 
 export const createValidation = validation({
@@ -16,12 +16,18 @@ export const createValidation = validation({
 })
 
 export const create = async (
-  request: FastifyRequest<{ Body: ICities }>,
+  request: FastifyRequest<{ Body: IBodyProps }>,
   reply: FastifyReply
 ) => {
-  console.log(request.body)
+  const result = await CitiesProvider.create(request.body)
 
-  return reply.status(201).send(1)
+  if (result instanceof Error) {
+    return reply.status(500).send({
+      errors: { default: result.message },
+    })
+  }
+
+  return reply.status(201).send(result)
 }
 
 z.setErrorMap(customErrorsMap)

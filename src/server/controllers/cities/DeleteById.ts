@@ -7,7 +7,7 @@ export interface IParamProps {
 }
 
 const ParamSchema: ZodType<IParamProps> = z.object({
-  id: z.number().int().positive(),
+  id: z.number().int().positive().optional(),
 })
 
 export const deleteByIdValidation = validation({

@@ -1,17 +1,15 @@
 import { z } from 'zod'
 import { validation } from '../../shared/middlewares'
 import { FastifyReply, FastifyRequest } from 'fastify'
-
+import { ICitie } from '../../database/models'
 interface IParamProps {
-  id: number
+  id?: number
 }
 
-interface IBodyProps {
-  nome: string
-}
+interface IBodyProps extends Omit<ICitie, 'id'> {}
 
 const paramsSchema: z.ZodType<IParamProps> = z.object({
-  id: z.number().int().positive(),
+  id: z.number().int().positive().optional(),
 })
 const BodySchema: z.ZodType<IBodyProps> = z.object({
   nome: z.string().min(3),
