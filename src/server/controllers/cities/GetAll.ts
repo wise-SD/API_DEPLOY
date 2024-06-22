@@ -2,6 +2,9 @@ import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify'
 import { validation } from '../../shared/middlewares'
 import { customErrorsMap } from '../../shared/services/ZodErrorsMap'
 import { z } from 'zod'
+import { Knex } from '../../database'
+import { ETableNames } from '../../database/ETableNames'
+import { CitiesProvider } from '../../database/providers'
 
 interface IQueryProps {
   page?: number
@@ -23,17 +26,27 @@ export const getAll = async (
   request: FastifyRequest<{ Querystring: IQueryProps }>,
   reply: FastifyReply
 ) => {
-  reply.headers({
-    'access-control-expose-headers': 'x-total-count',
-    'x-total-count': 1,
-  })
+  const users = await CitiesProvider.getAll()
 
-  return reply.status(200).send([
-    {
-      id: 1,
-      name: 'Recife',
-    },
-  ])
+  if (users instanceof Error) {
+    return reply.status(500).send({
+      errors: { default: users.message },
+    })
+  }
+
+  return reply.status(200).send({ users })
+
+  // reply.headers({
+  //   'access-control-expose-headers': 'x-total-count',
+  //   'x-total-count': 1,
+  // })
+
+  // return reply.status(200).send([
+  //   {
+  //     id: 1,
+  //     name: 'Recife',
+  //   },
+  // ])
 }
 
 z.setErrorMap(customErrorsMap)

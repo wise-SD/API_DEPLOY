@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { validation } from '../../shared/middlewares'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { CitiesProvider } from '../../database/providers'
 
 interface IParamProps {
   id?: number
@@ -18,13 +19,22 @@ export const getById = async (
   request: FastifyRequest<{ Params: IParamProps }>,
   reply: FastifyReply
 ) => {
-  if (request.params.id === 99999)
-    return reply
-      .status(500)
-      .send({ errors: { default: 'Registro não encontrado' } })
+  if (!request.params.id) {
+    return reply.status(400).send({
+      errors: {
+        default: 'O parâmetro id precisa ser informado',
+      },
+    })
+  }
 
-  return reply.status(200).send({
-    id: request.params.id,
-    nome: 'Recife',
-  })
+  const result = await CitiesProvider.getById(request.params.id)
+  if (result instanceof Error) {
+    return reply.status(500).send({
+      errors: {
+        default: result.message,
+      },
+    })
+  }
+
+  return reply.status(200).send(result)
 }

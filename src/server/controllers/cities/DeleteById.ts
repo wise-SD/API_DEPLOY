@@ -1,13 +1,14 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { ZodType, z } from 'zod'
 import { validation } from '../../shared/middlewares/Validation'
+import { CitiesProvider } from '../../database/providers'
 
 export interface IParamProps {
-  id?: number
+  id: number
 }
 
 const ParamSchema: ZodType<IParamProps> = z.object({
-  id: z.number().int().positive().optional(),
+  id: z.number().int().positive(),
 })
 
 export const deleteByIdValidation = validation({
@@ -18,12 +19,13 @@ export const deleteById = async (
   request: FastifyRequest<{ Params: IParamProps }>,
   reply: FastifyReply
 ) => {
-  console.log(request.params)
+  const result = await CitiesProvider.deleteById(request.params.id)
 
-  if (request.params.id === 99999)
-    return reply
-      .status(500)
-      .send({ errors: { default: 'Registro não encontrado' } })
+  if (result instanceof Error) {
+    return reply.status(500).send({
+      errors: { default: result.message },
+    })
+  }
 
-  return reply.status(204).send()
+  return reply.status(200).send({ message: 'Deletado com sucesso' })
 }
