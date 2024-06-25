@@ -3,6 +3,7 @@ import * as getAll from './GetAll'
 import * as getById from './GetById'
 import * as deleteById from './DeleteById'
 import * as updateById from './UpdateById'
+import * as count from './Count'
 
 export const CitiesProvider = {
   ...create,
@@ -10,4 +11,5 @@ export const CitiesProvider = {
   ...deleteById,
   ...updateById,
   ...getById,
+  ...count,
 }

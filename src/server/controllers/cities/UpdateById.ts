@@ -26,9 +26,7 @@ export const updateById = async (
   request: FastifyRequest<{ Params: IParamProps; Body: IBodyProps }>,
   reply: FastifyReply
 ) => {
-  const { id } = request.params
-
-  if (!id) {
+  if (!request.params.id) {
     return reply.status(400).send({
       errors: {
         default: 'O parâmetro nome não existe',
@@ -36,7 +34,10 @@ export const updateById = async (
     })
   }
 
-  const result = await CitiesProvider.updateById(id, request.body)
+  const result = await CitiesProvider.updateById(
+    request.params.id,
+    request.body
+  )
   if (result instanceof Error) {
     return reply.status(500).send({
       errors: {

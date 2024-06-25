@@ -19,15 +19,17 @@ export const getById = async (
   request: FastifyRequest<{ Params: IParamProps }>,
   reply: FastifyReply
 ) => {
-  if (!request.params.id) {
+  const isIdExists = request.params.id
+
+  if (!isIdExists) {
     return reply.status(400).send({
       errors: {
-        default: 'O parâmetro id precisa ser informado',
+        default: 'O parâmetro "id" precisa ser informado',
       },
     })
   }
 
-  const result = await CitiesProvider.getById(request.params.id)
+  const result = await CitiesProvider.getById(isIdExists)
   if (result instanceof Error) {
     return reply.status(500).send({
       errors: {

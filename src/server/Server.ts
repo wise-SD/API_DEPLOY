@@ -6,7 +6,7 @@ const app = fastify({
 })
 
 app.get('/', (request, reply) => {
-  reply.status(200).send('Worked')
+  reply.status(200).send('working')
 })
 
 app.register(registerCities, {

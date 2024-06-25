@@ -4,15 +4,14 @@ import { ICitie } from '../../models'
 
 export const updateById = async (
   id: number,
-  nome: Omit<ICitie, 'id'>
-): Promise<ICitie[] | Error> => {
+  cidade: Omit<ICitie, 'id'>
+): Promise<void | Error> => {
   try {
     const updateRegister = await Knex(ETableNames.citie)
-      .update(nome)
+      .update(cidade)
       .where('id', '=', id)
-      .returning('*')
 
-    if (updateRegister) return updateRegister
+    if (updateRegister > 0) return
 
     return new Error('Error ao atualizar o registro')
   } catch (error) {

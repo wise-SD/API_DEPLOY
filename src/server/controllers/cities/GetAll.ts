@@ -2,11 +2,10 @@ import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from 'fastify'
 import { validation } from '../../shared/middlewares'
 import { customErrorsMap } from '../../shared/services/ZodErrorsMap'
 import { z } from 'zod'
-import { Knex } from '../../database'
-import { ETableNames } from '../../database/ETableNames'
 import { CitiesProvider } from '../../database/providers'
 
 interface IQueryProps {
+  id?: number
   page?: number
   limit?: number
   filter?: string
@@ -16,6 +15,7 @@ const getAllSchema: z.ZodType<IQueryProps> = z.object({
   page: z.number().positive().optional(),
   limit: z.number().positive().optional(),
   filter: z.string().optional().optional(),
+  id: z.number().int().default(0).optional(),
 })
 
 export const getAllValidation = validation({
@@ -26,27 +26,30 @@ export const getAll = async (
   request: FastifyRequest<{ Querystring: IQueryProps }>,
   reply: FastifyReply
 ) => {
-  const users = await CitiesProvider.getAll()
+  const result = await CitiesProvider.getAll(
+    request.query.page || 1,
+    request.query.limit || 7,
+    request.query.filter || '',
+    request.query.id
+  )
+  const count = await CitiesProvider.count(request.query.filter)
 
-  if (users instanceof Error) {
+  if (result instanceof Error) {
     return reply.status(500).send({
-      errors: { default: users.message },
+      errors: { default: result.message },
+    })
+  } else if (count instanceof Error) {
+    return reply.status(500).send({
+      errors: { default: count.message },
     })
   }
 
-  return reply.status(200).send({ users })
+  reply.headers({
+    'access-control-expose-headers': 'x-total-count',
+    'x-total-count': count,
+  })
 
-  // reply.headers({
-  //   'access-control-expose-headers': 'x-total-count',
-  //   'x-total-count': 1,
-  // })
-
-  // return reply.status(200).send([
-  //   {
-  //     id: 1,
-  //     name: 'Recife',
-  //   },
-  // ])
+  return reply.status(200).send(result)
 }
 
 z.setErrorMap(customErrorsMap)

@@ -14,7 +14,7 @@ describe('Cidades - UpdateBydId', () => {
       .put(`/cidades/${resCreateuser.body}`)
       .send({ nome: 'Maceio' })
 
-    expect(resUpdate.statusCode).toEqual(200)
+    expect(resUpdate.statusCode).toEqual(204)
   })
 
   it('Tenta atualizar um registro que não existe', async () => {

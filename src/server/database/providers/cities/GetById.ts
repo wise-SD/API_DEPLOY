@@ -2,14 +2,14 @@ import { ETableNames } from '../../ETableNames'
 import { Knex } from '../../knex'
 import { ICitie } from '../../models'
 
-export const getById = async (id: number): Promise<ICitie[] | Error> => {
+export const getById = async (id: number): Promise<ICitie | Error> => {
   try {
     const result = await Knex(ETableNames.citie)
       .select('*')
       .where('id', '=', id)
-      .returning('*')
+      .first()
 
-    if (result.length !== 0) return result
+    if (result) return result
 
     return new Error('Registro não encontrado')
   } catch (error) {

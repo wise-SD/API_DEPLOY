@@ -10,7 +10,8 @@ describe('Cidades - Create', () => {
     expect(response.statusCode).toEqual(201)
     expect(typeof response.body).toEqual('number')
   })
-  it('Tenta criar um registro com nome muito curso', async () => {
+
+  it('Tenta criar um registro com nome muito curto', async () => {
     const response = await testServer.post('/cidades').send({ nome: 'Re' })
 
     expect(response.statusCode).toEqual(400)
@@ -24,8 +25,17 @@ describe('Cidades - Create', () => {
     expect(response.body).toHaveProperty('errors.body.nome')
   })
 
-  it('Tenta criar um registro do tipo number', async () => {
+  it('Tenta criar um registro passando um número', async () => {
     const response = await testServer.post('/cidades').send({ nome: 1 })
+
+    expect(response.statusCode).toEqual(400)
+    expect(response.body).toHaveProperty('errors.body.nome')
+  })
+
+  it('Tenta criar um registro com a propriedade nome errada', async () => {
+    const response = await testServer
+      .post('/cidades')
+      .send({ nomed: 'Nova York' })
 
     expect(response.statusCode).toEqual(400)
     expect(response.body).toHaveProperty('errors.body.nome')
