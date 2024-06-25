@@ -7,7 +7,7 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   PORT: z.number().default(3333),
-  IS_LOCAL_HOST: z.boolean(),
+  IS_LOCAL_HOST: z.string().default('true'),
 })
 
 const _env = envSchema.safeParse(process.env)
